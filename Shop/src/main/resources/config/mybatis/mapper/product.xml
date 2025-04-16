@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="p">
+	<!-- 전체 리스트 검색 -->
+	<select id="select_list" resultType="product">
+		select * from product
+	</select>
+	<select id="select_category" resultType="product" parameterType="String"> select * from product where category=#{category} </select>
+	<!--  division 검색  -->
+	<select id="select_division" resultType="product" parameterType="String"> select * from product where division=#{division} </select>
+
+	<!-- 메뉴바 검색 -->
+	<select id="select_Menu" resultType="product">
+		select distinct division,
+		category from product
+	</select>
+
+	<!-- 제품 상세보기 -->
+	<select id="select_one" resultType="product" parameterType="int">
+		select * from product where product_idx=#{product_idx}
+	</select>
+
+	<select id="product_search" parameterType="String"
+		resultType="product">
+		SELECT *
+		FROM product
+		WHERE name LIKE CONCAT('%', #{search},
+		'%')
+	</select>
+
+	<select id="getDistinctDivisions" resultType="string">
+		SELECT DISTINCT
+		division
+		FROM PRODUCT
+		ORDER BY division
+	</select>
+
+	<select id="getAllDistinctCategories" resultType="string">
+		SELECT DISTINCT
+		category
+		FROM PRODUCT
+		ORDER BY category
+	</select>
+
+	<select id="new_Product_select" resultType="product">
+		select * from
+		apply_product
+	</select>
+
+	<select id="new_Product_select_one" resultType="product"
+		parameterType="int">
+		select * from apply_product where product_idx =
+		#{product_idx}
+	</select>
+
+	<insert id="insertProduct" parameterType="product">
+		insert into product
+		(name,price,discount,inventory,`explain`,selleridx,filepath,category,division,details)
+		values
+		(#{name}, #{price}, #{discount}, #{inventory},
+		#{explain},
+		#{selleridx}, #{filepath}, #{category}, #{division},
+		#{details})
+	</insert>
+
+	<insert id="new_Product" parameterType="product">
+		insert into apply_product
+		(name,price,discount,inventory,`explain`,selleridx,filepath,category,division,
+		details)
+		values
+		(#{name}, #{price}, #{discount}, #{inventory},
+		#{explain},
+		#{selleridx}, #{filepath}, #{category}, #{division},
+		#{details})
+	</insert>
+
+	<select id="selectAdd" parameterType="product" resultType="int">
+		select product_idx from product where name=#{name} and price=#{price}
+		and discount=#{discount} and inventory=#{inventory}
+	</select>
+
+	<delete id="delete_product" parameterType="int"> 
+	delete from product where product_idx = #{product_idx} 
+	</delete>
+
+	<select id="sale_product" resultType="product">
+		select * from product where
+		discount > 50
+	</select>
+
+	<select id="sale_pet" resultType="product">
+		select * from product where
+		division = "반려동물" and discount > 1
+	</select>
+
+	<select id="sale_christmas" resultType="product">
+		SELECT * FROM product
+		WHERE name LIKE '%산타%' or name like '%시나몬롤%'
+	</select>
+
+	<select id="sale_it" resultType="product">
+		select * from product where
+		category = 'PC' or category = '휴대폰'
+	</select>
+
+	<select id="sale_newyear" resultType="product">
+		select * from product where
+		discount > 60
+	</select>
+
+	<delete id="delete_apply_product" parameterType="int">
+		delete from
+		apply_product
+		where product_idx = #{product_idx}
+	</delete>
+
+	<select id="view_banner_product1" parameterType="vo.BannerVO"
+		resultType="product">
+		select * from product
+		where (division = #{division}
+		or
+		category = #{category1}
+		or category = #{category2}
+		or name like
+		CONCAT('%', #{keyword1}, '%')
+		or name like CONCAT('%', #{keyword2},
+		'%'))
+		and discount &lt; #{discount}
+		AND discount &gt; 1
+	</select>
+
+	<select id="view_banner_product2" parameterType="vo.BannerVO"
+		resultType="product">
+		select * from product
+		where division = #{division}
+		or
+		category = #{category1}
+		or category = #{category2}
+		or name like
+		CONCAT('%', #{keyword1}, '%')
+		or name like CONCAT('%', #{keyword2},
+		'%')
+	</select>
+
+	<select id="view_banner_product3" parameterType="vo.BannerVO"
+		resultType="product">
+		select * from product
+		where discount &lt; #{discount}
+		AND discount &gt; 1
+	</select>
+	
+	<select id="getProductList" parameterType="int" resultType="vo.ProductVO">
+	    SELECT * FROM product WHERE selleridx = #{user_idx};
+	</select>
+	
+	<select id="getApplyProductList" parameterType="int" resultType="vo.ProductVO">
+	    SELECT * FROM apply_product WHERE selleridx = #{user_idx};
+	</select>
+	
+	 <update id="updateProduct" parameterType="vo.ProductVO">
+	    UPDATE product
+	    SET name = #{name},
+	        price = #{price},
+	        discount = #{discount},
+	        inventory = #{inventory},
+	         `explain` = #{explain},
+	        filepath = #{filepath},
+	        division = #{division},
+	        category = #{category},
+	        details = #{details}
+	    WHERE product_idx = #{product_idx}
+	</update>
+
+	<update id="updateApplyProduct" parameterType="vo.ProductVO">
+	    UPDATE apply_product
+	    SET name = #{name},
+	        price = #{price},
+	        discount = #{discount},
+	        inventory = #{inventory},
+	         `explain` = #{explain},
+	        filepath = #{filepath},
+	        category = #{category},
+	        division = #{division},
+	        details = #{details}
+	    WHERE product_idx = #{product_idx}
+	</update>
+	
+	<select id="getAllApplyProductList" resultType="vo.ProductVO">
+	    SELECT * FROM apply_product;
+	</select>
+	
+	<insert id="insertApplyProduct" parameterType="vo.ProductVO">
+	    INSERT INTO apply_product (product_idx, name, price, discount, inventory, `explain`, filepath, division, category, details, selleridx)
+	    VALUES (#{product_idx}, #{name}, #{price}, #{discount}, #{inventory}, #{explain}, #{filepath}, #{division}, #{category}, #{details}, #{selleridx});
+	</insert>
+	
+	<select id="getProductListByStatus" parameterType="string" resultType="vo.ProductVO">
+	    SELECT * FROM apply_product
+	    WHERE status = #{status}
+	</select>
+	
+	<update id="updateProductStatus" parameterType="vo.ProductVO">
+	    UPDATE product
+	    SET status = #{status}
+	    WHERE product_idx = #{productIdx}
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
